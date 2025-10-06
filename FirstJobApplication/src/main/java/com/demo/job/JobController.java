@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,8 +27,11 @@ public class JobController {
 	}
 
 	@GetMapping("/getJob")
-	public ResponseEntity<List<Job>> getAll(){
-		return new ResponseEntity<>(this.jobService.getJob(),HttpStatus.OK);
+	public ResponseEntity<List<Job>> getAll(@RequestParam(defaultValue = "0") int page,
+	        @RequestParam(defaultValue = "5") int size,
+	        @RequestParam(defaultValue = "id") String sortBy,
+	        @RequestParam(defaultValue = "asc") String direction) {
+	    return new ResponseEntity<>(jobService.getAll(page, size, sortBy, direction), HttpStatus.OK);
 	}
 	
 	@PostMapping("/addJob")

@@ -8,6 +8,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 @Service
 public class JobServiceImpl implements JobService{
 
@@ -24,9 +29,39 @@ public class JobServiceImpl implements JobService{
 	}
 
 	@Override
-	public List<Job> getAll(int id) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Job> getAll(int page, int size, String sortBy, String direction) {
+
+	    // Step 1️⃣: Print the inputs received from the controller
+	    System.out.println("🟢 Pagination & Sorting Request Received:");
+	    System.out.println("   👉 Page Number : " + page);
+	    System.out.println("   👉 Page Size   : " + size);
+	    System.out.println("   👉 Sort By     : " + sortBy);
+	    System.out.println("   👉 Direction   : " + direction);
+
+	    // Step 2️⃣: Create Sort object based on direction
+	    Sort sort = direction.equalsIgnoreCase("desc") ?
+	            Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+	    System.out.println("📦 Sort Object Created: " + sort);
+
+	    // Step 3️⃣: Create Pageable object using page, size, and sort
+	    Pageable pageable = PageRequest.of(page, size, sort);
+	    System.out.println("📄 Pageable Object: " + pageable);
+
+	    // Step 4️⃣: Fetch data using repository
+	    Page<Job> jobPage = jobRepository.findAll(pageable);
+
+	    // Step 5️⃣: Print metadata (useful for debugging)
+	    System.out.println("✅ Total Elements (All Records): " + jobPage.getTotalElements());
+	    System.out.println("✅ Total Pages: " + jobPage.getTotalPages());
+	    System.out.println("✅ Current Page Number: " + jobPage.getNumber());
+	    System.out.println("✅ Number of Records in this Page: " + jobPage.getNumberOfElements());
+
+	    // Step 6️⃣: Print data for visual verification
+	    System.out.println("📋 Records Returned in This Page:");
+	    jobPage.getContent().forEach(job -> System.out.println("   - " + job));
+
+	    // Step 7️⃣: Return paginated list
+	    return jobPage.getContent();
 	}
 
 	@Override
